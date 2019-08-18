@@ -34,39 +34,12 @@ bool Monscape::Desc_Game(String Nom_sys, String Adresse, String Ver_G, String Ve
   _Adresse = Adresse;
 }
 
-String Monscape::info() {
-  return _Nom_sys + "<br> version de monscape: " + _Ver_ms + "<br> version du puzzle: " + _Ver_G + "<br> " + _Desc_Game;
+
+
+void Monscape::set_Win(String Win_Code){
+  _Win_Code = Win_Code;
 }
 
-bool Monscape::Init_Game() {
-  pinMode(3, INPUT_PULLUP);
-}
-
-
-
-bool Monscape::Communication()
-{
-  delay(500);
-  switch (_Protocole) {
-    case MSCape_RJ45:
-      //      mySerial.begin(9600);
-      //      mySerial.println("Communication RS485 OK");
-    break;
-    case MSCape_WIFI:
-      // statements
-    break;
-    case MSCape_RS485:
-      // statements
-    break;
-    case MSCape_I2C:
-      // statements
-    break;
-    default:
-    Serial.begin(9600);
-    Serial.println("Communication OK");
-    break;
-  }
-}
 
 
 bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
@@ -102,6 +75,7 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
     Serial.println("Communication OK");
     break;
   }
+  Init_Trame();
 }
 
 bool Monscape::RS485_Start(int Pinrx, int pintx,int baud = 74880) {

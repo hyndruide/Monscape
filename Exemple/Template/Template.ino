@@ -79,10 +79,6 @@ void setup() {
    * 3rd : RS485 pin for read /write way.
    */ 
   Puzz.Communication(RX_PIN, TX_PIN, RS485_RW);
-   /*
-   * Send the first initialisation trame to the server :
-   */ 
-  Puzz.Init_Trame();
   /*
    * Set the puzzle to start useable Later
    */ 
