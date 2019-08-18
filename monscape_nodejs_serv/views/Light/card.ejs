@@ -1,0 +1,24 @@
+        <script src="/static/js/jquery.minicolors.js"></script>
+  <link rel="stylesheet" href="/static/css/jquery.minicolors.css">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+
+      <div name="<%= name %>" controller="monscape" class="card blue-grey darken-1">
+        <div class="card-content white-text">
+          <span name = "<%= name %>name" class="card-title"></span>
+          <!-- Dropdown Trigger -->
+
+          <p class="range-field">
+			            <div class="form-group">
+              <br>
+              <input type="text" id="rgb" class="form-control demo" data-format="rgb" value="rgb(33, 147, 58)">
+            </div>
+
+            <input type="range" name="<%= name %>R" min="0" max="100" value ="0"/>
+            <input type="range" name="<%= name %>V" min="0" max="100" value ="0"/>
+            <input type="range" name="<%= name %>B" min="0" max="100" value ="0"/>
+          </p>
+        </div>
+        <div class="card-action">
+        </div>
+      </div>

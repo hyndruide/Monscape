@@ -1,0 +1,140 @@
+
+
+$(function() {
+  var rotarySwitch1 = $('.<%= name %>rotarySwitch1').rotaryswitch({
+    showMarks: true,
+    themeClass: 'small',
+              // Minimal value
+              minimum: -24, 
+            // Maximum value
+            maximum: 24,
+          });
+  rotarySwitch1.on('change', function() {
+    console.log(rotarySwitch1.val());
+            //rotarySwitch3b.val(13).change();
+          });
+
+  var rotarySwitch2 = $('.<%= name %>rotarySwitch2').rotaryswitch({
+    showMarks: true,
+    themeClass: 'small',
+              // Minimal value
+              minimum: -12, 
+            // Maximum value
+            maximum: 12,
+          });
+  rotarySwitch2.on('change', function() {
+    console.log(rotarySwitch2.val());
+            //rotarySwitch3b.val(13).change();
+          });
+
+  var rotarySwitch3 = $('.<%= name %>rotarySwitch3').rotaryswitch({
+    showMarks: true,
+    themeClass: 'small',
+              // Minimal value
+              minimum: -12, 
+            // Maximum value
+            maximum: 12,
+          });
+  rotarySwitch3.on('change', function() {
+    console.log(rotarySwitch3.val());
+            //rotarySwitch3b.val(13).change();
+          });
+
+  var rotarySwitch4 = $('.<%= name %>rotarySwitch4').rotaryswitch({
+    showMarks: true,
+    themeClass: 'small',
+              // Minimal value
+              minimum: -12, 
+            // Maximum value
+            maximum: 12,
+          });
+  rotarySwitch4.on('change', function() {
+    console.log(rotarySwitch4.val());
+            //rotarySwitch3b.val(13).change();
+          });
+
+});      
+$('input#input_text<%= name %>').characterCounter();
+
+$('.modal').modal();
+
+$('.dropdown-trigger').dropdown();
+
+socket.on('message', function(message) {
+  console.log(message)
+  var msg = JSON.parse( message );
+  console.log(msg)
+  if(msg["Adr"] == "<%= name %>" ){
+      $('input[name=<%= name %>knob1]').val(msg["input"]).change();
+          $("p[name='<%= name %>input']").html(msg["input"]);
+    $("span[name='<%= name %>Last_input']").html(msg["l_input"]);
+    $("span[name='<%= name %>name']").html(msg["Nom"] + " " + msg["V_G"]);
+    $("span[name='<%= name %>win']").html("Bon code : " + msg["Win"]);
+    $("span[name='<%= name %>win']").html(msg["Win"]);
+
+
+    if (msg["stat"]==12) {
+      $("div[name='<%= name %>']").removeClass("purple");
+      $("div[name='<%= name %>']").removeClass("blue-grey");
+      $("div[name='<%= name %>']").addClass("green");
+    }
+    else if (msg["stat"]==6) {
+      $("div[name='<%= name %>']").removeClass("purple");
+      $("div[name='<%= name %>']").removeClass("green");
+      $("div[name='<%= name %>']").addClass("blue-grey");
+
+    }
+    else if (msg["stat"]==11) {
+      $("div[name='<%= name %>']").removeClass("blue-grey");
+      $("div[name='<%= name %>']").removeClass("green");
+      $("div[name='<%= name %>']").addClass("purple");
+
+    }
+  }
+
+});
+
+      //Changer la lumiere
+
+      $("input[name='<%= name %>R']").on("change", function(){
+       var R = $(this).val();
+       var V = $("input[name='<%= name %>V']").val();
+       var B = $("input[name='<%= name %>B']").val();
+       socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+     });
+      $("input[name='<%= name %>V']").on("change", function(){
+       var R = $("input[name='<%= name %>R']").val();
+       var V = $(this).val();
+       var B = $("input[name='<%= name %>B']").val();
+       socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+     });
+      $("input[name='<%= name %>B']").on("change", function(){
+       var R = $("input[name='<%= name %>R']").val();
+       var V = $("input[name='<%= name %>V']").val();
+       var B = $(this).val();
+       socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+     });
+
+
+ //Reset
+ $('#<%= name %>reset').on("click", function(){
+  socket.emit('Communication',{A : '<%= name %>',C: 'R'});
+});
+      //Bypass
+      $('#<%= name %>backup').on("click", function(){
+        socket.emit('Communication',{A : '<%= name %>',C: 'B'});
+      });
+//Info
+
+$( "#<%= name %>code" ).submit(function( event ) {
+  code = $(this).find("input[name=<%= name %>_changecode]").val();
+  socket.emit('Communication',{A : '<%= name %>',C: 'W',D : code});
+});
+//      $('#<%= name %>upd').on("click", function(){
+//        socket.emit('Communication',{A : '<%= name %>',C: 'I'});
+//      });
+//Info
+$('#<%= name %>upd').on("click", function(){
+  socket.emit('Communication',{A : '<%= name %>',C: 'I'});
+});
+

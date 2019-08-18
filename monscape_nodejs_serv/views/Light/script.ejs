@@ -1,0 +1,93 @@
+      
+
+
+      $('.demo').each( function() {
+        //
+        // Dear reader, it's actually very easy to initialize MiniColors. For example:
+        //
+        //  $(selector).minicolors();
+        //
+        // The way I've done it below is just for the demo, so don't get confused
+        // by it. Also, data- attributes aren't supported at this time. Again,
+        // they're only used for the purposes of this demo.
+        //
+        $(this).minicolors({
+          inline: true,
+          format: $(this).attr('data-format') || 'hex',
+          change: function(value, opacity) {
+            if( !value ) return;
+              var R = Math.round($(this).minicolors('rgbObject')['r']/255*100);
+              var V = Math.round($(this).minicolors('rgbObject')['g']/255*100);
+              var B = Math.round($(this).minicolors('rgbObject')['b']/255*100);
+              console.log(R);
+              $("input[name='<%= name %>R']").val(R);
+              $("input[name='<%= name %>V']").val(V);
+              $("input[name='<%= name %>B']").val(B);
+              socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+          },
+          theme: 'default'
+        });
+
+      });
+
+
+
+        socket.on('message', function(message) {
+          console.log(message)
+          var msg = JSON.parse( message );
+          console.log(msg)
+          if(msg["Adr"] == "<%= name %>" ){
+
+          $("span[name='<%= name %>name']").html(msg["Nom"] + " " + msg["V_G"]);
+
+
+
+          if (msg["stat"]==12) {
+            $("div[name='<%= name %>']").removeClass("purple");
+            $("div[name='<%= name %>']").removeClass("blue-grey");
+            $("div[name='<%= name %>']").addClass("green");
+          }
+          else if (msg["stat"]==6) {
+            $("div[name='<%= name %>']").removeClass("purple");
+            $("div[name='<%= name %>']").removeClass("green");
+            $("div[name='<%= name %>']").addClass("blue-grey");
+
+          }
+          else if (msg["stat"]==11) {
+            $("div[name='<%= name %>']").removeClass("blue-grey");
+            $("div[name='<%= name %>']").removeClass("green");
+            $("div[name='<%= name %>']").addClass("purple");
+
+          }
+        }
+
+        });
+
+      //Changer la lumiere
+
+      $("input[name='<%= name %>R']").on("change", function(){
+       var R = $(this).val();
+       var V = $("input[name='<%= name %>V']").val();
+       var B = $("input[name='<%= name %>B']").val();
+       socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+     });
+      $("input[name='<%= name %>V']").on("change", function(){
+       var R = $("input[name='<%= name %>R']").val();
+       var V = $(this).val();
+       var B = $("input[name='<%= name %>B']").val();
+       socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+     });
+      $("input[name='<%= name %>B']").on("change", function(){
+       var R = $("input[name='<%= name %>R']").val();
+       var V = $("input[name='<%= name %>V']").val();
+       var B = $(this).val();
+       socket.emit('Communication',{A : '<%= name %>',C: 'L',D : [R,V,B]});
+     });
+
+
+
+//Info
+$('#<%= name %>upd').on("click", function(){
+  socket.emit('Communication',{A : '<%= name %>',C: 'I'});
+});
+

@@ -1,0 +1,77 @@
+
+
+
+
+
+     
+$('input#input_text<%= name %>').characterCounter();
+
+$('.modal').modal();
+
+$('.dropdown-trigger').dropdown();
+
+
+socket.on('message', function(message){
+  console.log(message)
+  var msg = JSON.parse( message );
+  console.log(msg)
+  if(msg["Adr"] == "<%= name %>" ){
+    $("div[name='<%= name %>Speed']").css({'width': msg["input"] + '%' }); 
+    if (msg["input"] > 50 &&    msg["input"] < 80) {
+    $("div[name='<%= name %>Speed']").css({'background-color': 'green' }); 
+    }
+    else{
+$("div[name='<%= name %>Speed']").css({'background-color': 'red' }); 
+    }
+    $("span[name='<%= name %>input']").html(msg["input"]);
+    $("span[name='<%= name %>Last_input']").html(msg["l_input"]);
+    $("span[name='<%= name %>name']").html(msg["Nom"] + " " + msg["V_G"]);
+    $("span[name='<%= name %>win']").html("Bon code : " + msg["Win"]);
+    $("span[name='<%= name %>win']").html(msg["Win"]);
+
+
+    if (msg["stat"]==12) {
+      $("div[name='<%= name %>']").removeClass("purple");
+      $("div[name='<%= name %>']").removeClass("blue-grey");
+      $("div[name='<%= name %>']").addClass("green");
+    }
+    else if (msg["stat"]==6) {
+      $("div[name='<%= name %>']").removeClass("purple");
+      $("div[name='<%= name %>']").removeClass("green");
+      $("div[name='<%= name %>']").addClass("blue-grey");
+
+    }
+    else if (msg["stat"]==11) {
+      $("div[name='<%= name %>']").removeClass("blue-grey");
+      $("div[name='<%= name %>']").removeClass("green");
+      $("div[name='<%= name %>']").addClass("purple");
+
+    }
+  }
+
+});
+
+
+
+ //Reset
+ $('#<%= name %>reset').on("click", function(){
+  socket.emit('Communication',{A : '<%= name %>',C: 'R'});
+});
+      //Bypass
+      $('#<%= name %>backup').on("click", function(){
+        socket.emit('Communication',{A : '<%= name %>',C: 'B'});
+      });
+//Info
+
+$( "#<%= name %>code" ).submit(function( event ) {
+  code = $(this).find("input[name=<%= name %>_changecode]").val();
+  socket.emit('Communication',{A : '<%= name %>',C: 'W',D : code});
+});
+//      $('#<%= name %>upd').on("click", function(){
+//        socket.emit('Communication',{A : '<%= name %>',C: 'I'});
+//      });
+//Info
+$('#<%= name %>upd').on("click", function(){
+  socket.emit('Communication',{A : '<%= name %>',C: 'I'});
+});
+

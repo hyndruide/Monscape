@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Socket.io</title>
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.slim.js"
+  integrity="sha256-BTlTdQO9/fascB1drekrDVkaKd9PkwBymMlHOiG+qLI="
+  crossorigin="anonymous"></script>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+
+<body>
+
+  <div class="row">
+    <div class="col s12 m3">
+      <div name="PG1" controller="monscape" class="card blue-grey darken-1">
+        <div class="card-content white-text">
+          <span name = "name" class="card-title"></span>
+          <span name = "win" ></span>
+          <a class='btn-floating halfway-fab waves-effect waves-light blue-grey darken-2 dropdown-trigger' href='#' data-target='dropdown1'><i class="material-icons">add</i></a>
+          <!-- Dropdown Trigger -->
+
+          <p name="input"></p>
+          <p class="range-field">
+
+            <input type="range" name="R" min="0" max="100" value ="0"/>
+            <input type="range" name="V" min="0" max="100" value ="0"/>
+            <input type="range" name="B" min="0" max="100" value ="0"/>
+          </p>
+        </div>
+        <div class="card-action">
+          <span>Dernier essai : </span>
+          <span name="Last_input"> </span>
+        </div>
+      </div>
+    </div> 
+  </div>
+
+
+  <!-- Dropdown Structure -->
+  <ul id='dropdown1' class='dropdown-content'>
+    <li><a id="PG1upd" href="#!">Actualisé</a></li>
+    <li><a id="PG1backup" href="#!">Backup</a></li>
+    <li><a href="#!">Special</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li><a href="#!">Start</a></li>
+    <li><a id="PG1reset" href="#!">Reset</a></li>
+    <li><a class="modal-trigger" href="#modal1">Changer code</a></li>
+  </ul>
+  
+
+
+
+  
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Changer le code</h4>
+      <p>Code Actuelle : <span name = "win" ></span> </p>
+    <div class="row">
+      <form id="PG1CODE" action="#"class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="input_text" name="PG1_changecode" type="text" data-length="4">
+            <label for="input_text">Nouveau code</label>
+            <input type="submit" value="Submit">
+          </div>
+        </div>
+      </form>
+    </div>
+
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+
+    $(document).ready(function(){
+
+      $('input#input_text').characterCounter();
+
+      $('.modal').modal();
+
+      $('.dropdown-trigger').dropdown();
+      var socket = io.connect('http://192.168.1.9:8080');
+      socket.on('message', function(message) {
+        console.log(message)
+        var msg = JSON.parse( message );
+        console.log(msg)
+
+        $("div[name='PG1'] > div > p[name='input']").html(msg["input"]);
+        $("div[name='PG1'] > div[class='card-action'] > span[name='Last_input']").html(msg["l_input"]);
+        $("div[name='PG1'] > div > span[name='name']").html(msg["Nom"] + " " + msg["V_G"]);
+        $("div[name='PG1'] > div > span[name='win']").html("Bon code : " + msg["Win"]);
+        $(".modal > .modal-content > p > span[name='win']").html(msg["Win"]);
+
+
+        if (msg["stat"]==12) {
+          $("div[name='PG1']").removeClass("purple");
+          $("div[name='PG1']").removeClass("blue-grey");
+          $("div[name='PG1']").addClass("green");
+        }
+        else if (msg["stat"]==6) {
+          $("div[name='PG1']").removeClass("purple");
+          $("div[name='PG1']").removeClass("green");
+          $("div[name='PG1']").addClass("blue-grey");
+          
+        }
+        else if (msg["stat"]==11) {
+          $("div[name='PG1']").removeClass("blue-grey");
+          $("div[name='PG1']").removeClass("green");
+          $("div[name='PG1']").addClass("purple");
+          
+        }
+
+      });
+
+      //Changer la lumiere
+
+      $("div[name='PG1'] > div > p > input[name='R']").on("change", function(){
+       var R = $(this).val();
+       var V = $("div[name='PG1'] > div > p > input[name='V']").val();
+       var B = $("div[name='PG1'] > div > p > input[name='B']").val();
+       socket.emit('Communication',{A : 'PG1',C: 'L',D : [R,V,B]});
+     });
+      $("div[name='PG1'] > div > p > input[name='V']").on("change", function(){
+       var R = $("div[name='PG1'] > div > p > input[name='R']").val();
+       var V = $(this).val();
+       var B = $("div[name='PG1'] > div > p > input[name='B']").val();
+       socket.emit('Communication',{A : 'PG1',C: 'L',D : [R,V,B]});
+     });
+      $("div[name='PG1'] > div > p > input[name='B']").on("change", function(){
+       var R = $("div[name='PG1'] > div > p > input[name='R']").val();
+       var V = $("div[name='PG1'] > div > p > input[name='V']").val();
+       var B = $(this).val();
+       socket.emit('Communication',{A : 'PG1',C: 'L',D : [R,V,B]});
+     });
+
+
+ //Reset
+      $('#PG1reset').on("click", function(){
+        socket.emit('Communication',{A : 'PG1',C: 'R'});
+      });
+      //Bypass
+      $('#PG1backup').on("click", function(){
+        socket.emit('Communication',{A : 'PG1',C: 'B'});
+      });
+//Info
+
+$( "#PG1CODE" ).submit(function( event ) {
+  code = $(this).find("input[name=PG1_changecode]").val();
+    socket.emit('Communication',{A : 'PG1',C: 'W',D : code});
+});
+//      $('#PG1upd').on("click", function(){
+//        socket.emit('Communication',{A : 'PG1',C: 'I'});
+//      });
+//Info
+      $('#PG1upd').on("click", function(){
+        socket.emit('Communication',{A : 'PG1',C: 'I'});
+      });
+      
+      setTimeout(function() {
+        console.log("prout")
+        socket.emit('Communication',{A : 'PG1', C: 'I'});
+      }, 100);
+
+
+
+    });
+
+
+  </script>
+</body>
+</html>
