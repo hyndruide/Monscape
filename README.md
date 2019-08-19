@@ -1,13 +1,13 @@
 # Monscape (alpha)
 
-Monscape is a library to create a monitoring interface easely and cheaper using arduino and esp32 as puzzle brain and a RPI as conductor
+Monscape is a library to create a monitoring interface easily and cheaper using Arduino and esp32 as puzzle brain and a RPI as conductor
 
-Monscape is a system client <-> server for escape game.
+Monscape is a system client <—> server for escape game.
 
-each client are a µcontroller (aruino, uno, nano, compatible... or ESP32)
+each client is a µcontroller (Arduino Uno, Nano, compatible … or ESP32)
 and the server is a raspberry pi 
 
-for now they can communicate via RS485 but i want to develope it with different way to communicate
+for now they can communicate via RS485 but I want to develop it with different ways to communicate
 
 They send a json each other to communicate.
 
@@ -27,7 +27,7 @@ node server.js
 
 ### Prerequisites
 
-install the library in arduino directory
+install the library in Arduino directory
 
 install nodejs on the raspberry pi
 
@@ -53,9 +53,9 @@ node server.js
 
 ## Built With
 
-* [OnOff](https://www.npmjs.com/package/onoff) - GPIO access and interrupt detection with Node.js
-* [Socket.io](https://socket.io/) - FEATURING THE FASTEST AND MOST RELIABLE REAL-TIME ENGIN
-* [ArduinoJSON](https://arduinojson.org/) - A JSOn arduino library
+* [OnOff](https://www.npmjs.com/package/onoff)—GPIO access and interrupt detection with Node.js
+* [Socket.io](https://socket.io/)—FEATURING THE FASTEST AND MOST RELIABLE REAL-TIME ENGIN
+* [ArduinoJSON](https://arduinojson.org/)—JSON Arduino library
 
 ## Contributing
 
@@ -67,4 +67,5 @@ node server.js
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License
+
