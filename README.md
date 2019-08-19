@@ -1,4 +1,4 @@
-# Monscape
+# Monscape (alpha)
 
 Monscape is a program to create a monitoring interface easely and cheaper using arduino and esp32 as puzzle brain and a RPI as conductor
 
