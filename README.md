@@ -1,7 +1,7 @@
 # Monscape (alpha)
 
-Monscape is a library to create a monitoring interface easily and cheaper using Arduino and esp32 as puzzle brain and a RPI as conductor
-
+Monscape is a library to create a monitoring interface for escape game easily and cheaper using Arduino and esp32 as puzzle brain and a RPI as conductor
+ 
 Monscape is a system client <—> server for escape game.
 
 each client is a µcontroller (Arduino Uno, Nano, compatible … or ESP32)
