@@ -1,14 +1,14 @@
 #include "Monscape.h"
 
 
-Monscape::Monscape(int relai, byte prtcl) {
+Monscape::Monscape(char relai, byte prtcl) {
   _Pin_Relai[0] = relai;
   _Num_Relais = 1;
   _Protocole = prtcl;
   Init();
 };
 
-Monscape::Monscape(int relai[2], byte prtcl) {
+Monscape::Monscape(char relai[2], byte prtcl) {
   _Pin_Relai[0] = relai[0];
   _Pin_Relai[1] = relai[1];
   _Num_Relais = 2;
@@ -44,7 +44,7 @@ void Monscape::set_Win(String Win_Code){
 
 bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
 {
-  int baud =74880;
+  int baud =9600;
   delay(500);
   switch (_Protocole) {
 
@@ -62,7 +62,6 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
     Serial.println("Communication OK");
     RS485_Start(Pinrx,pintx,baud);
       //mySerial->println("Communication RS485 OK");
-    digitalWrite(pinRS, LOW);
     Serial.println("Done!");
 #endif
 
@@ -78,24 +77,21 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
   Init_Trame();
 }
 
-bool Monscape::RS485_Start(int Pinrx, int pintx,int baud = 74880) {
+bool Monscape::RS485_Start(int Pinrx, int pintx,int baud) {
   pinMode(_RS485Pin, OUTPUT);
-  digitalWrite(_RS485Pin, LOW);
-  Serial.println("Communication RS485");
+
 #if defined(ESP32)
   Serial2.begin(baud);
 #else
   mySerial = new SoftwareSerial(Pinrx, pintx);
   mySerial->begin(baud);
 #endif
-  Serial.println("Envoie de Data");
-  digitalWrite(_RS485Pin, HIGH);
+  Serial.println("Communication RS485");
 }
 
 bool Monscape::Log_Trame() {
-  String buffers;
+  String buffer;
   doc.clear();
-  buffers = "";
   doc["Nom"] = _Nom_sys;
   doc["Adr"] = _Adresse;
   doc["V_G"] = _Ver_G;
@@ -116,15 +112,16 @@ bool Monscape::Log_Trame() {
     break;
     case MSCape_RS485:
     digitalWrite(_RS485Pin, HIGH);
-    delay(50);
-    serializeJson(doc, buffers);
+    delay(100);
+    serializeJson(doc, buffer);
 #if defined(ESP32)
-    Serial2.println(buffers);
+    Serial2.println(buffer);
 #else
-    mySerial->println(buffers);
+    mySerial->println(buffer);
 #endif
-    buffers = "";
-    delay(50);
+    serializeJson(doc, Serial);
+    Serial.println("");
+    delay(100);
     digitalWrite(_RS485Pin, LOW);
     break;
     case MSCape_I2C:
@@ -160,7 +157,7 @@ bool Monscape::Init_Trame() {
     serializeJson(doc, buffer);
 
 #if defined(ESP32)
-    Serial2.println(buffers);
+    Serial2.println(buffer);
 #else
     mySerial->println(buffer);
 #endif
@@ -249,11 +246,9 @@ bool Monscape::Listenserv() {
     //Serial.println("A");
     inData = mySerial->readStringUntil('\n');
     //Serial.println("B");
-    //Serial.println("data: " + inData);
+    Serial.println("data: " + inData);
     deserializeJson(doc, inData);
     BasicCommand();
-
-    //else Serial.print("not for me");
     inData = "";
   }
 }
@@ -285,11 +280,11 @@ bool Monscape::BasicCommand(){
           // statements
       break;
       case 'I':
+      Serial.println("youpi");
       Log_Trame();
       break;
       default:
-
-      special_command(doc);
+      special_command();
       break;
 
     }
@@ -313,7 +308,7 @@ bool Monscape::Win(bool bypass = false)
 void Monscape::resetard() {
 
   #if defined(ESP32)
-ESP.restart();
+  ESP.restart();
 #else
   asm volatile ("  jmp 0");  //declare reset function @ address 0
   #endif

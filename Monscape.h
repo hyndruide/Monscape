@@ -28,19 +28,19 @@ struct Trame {
 };
 
 
+
 class Monscape {
   private:
     String _Nom_sys,_Adresse, _Ver_G, _Ver_ms, _State_Game, _Desc_Game, _Win_Code;
-    String _Aide[4];
     int _Num_Relais;
     double _Temps;
-    int _Pin_Relai[2];
+    char _Pin_Relai[2];
     byte _Protocole;
     byte _RS485Pin;
     #if !defined(ESP32)
         SoftwareSerial *mySerial;
     #endif
-    StaticJsonDocument<256> doc;
+    StaticJsonDocument<128> doc;
     Trame _Trame;
     bool RS485_Start(int Pinrx, int pintx, int baud) ;
     bool BasicCommand();
@@ -49,8 +49,8 @@ class Monscape {
 
   public:
 
-    Monscape(int relai, byte prtcl);
-    Monscape(int relai[2], byte prtcl);
+    Monscape(char relai, byte prtcl);
+    Monscape(char relai[2], byte prtcl);
 
     bool Desc_Game(String Nom_sys, String _Adresse, String Ver_G, String Ver_ms, String Desc_Game,String Win_Code);
 
@@ -59,7 +59,7 @@ class Monscape {
     bool Listenserv();
 
     bool Log_Trame();
-    void special_command(StaticJsonDocument<256> doc);
+    void special_command();
     bool Puzzle();
     bool Fail();
     bool Win(bool bypass );
