@@ -24,11 +24,10 @@ bool Monscape::Init()
 
 }
 
-bool Monscape::Desc_Game(String Nom_sys, String Adresse, String Ver_G, String Ver_ms, String Desc_Game, String Win_Code)
+bool Monscape::Desc_Game(String Nom_sys, String Adresse, String Ver_G, String Desc_Game, String Win_Code)
 {
   _Nom_sys = Nom_sys;
   _Ver_G = Ver_G;
-  _Ver_ms = Ver_ms;
   _Desc_Game = Desc_Game;
   _Win_Code = Win_Code;
   _Adresse = Adresse;
@@ -42,10 +41,12 @@ void Monscape::set_Win(String Win_Code){
 
 
 
-bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
+bool Monscape::Communication(int Pinrx, int pintx , byte pinRS,int  baud)
 {
-  int baud =9600;
-  delay(500);
+  
+  _RS485Pin = pinRS;
+   pinMode(_RS485Pin, OUTPUT);
+  digitalWrite(_RS485Pin, LOW);
   switch (_Protocole) {
 
     case MSCape_RJ45:
@@ -55,10 +56,11 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
     break;
     case MSCape_RS485:
 #if defined(ESP32)
-
+    Serial.begin(115200);
+    Serial.println("Communication OK");
+    RS485_Start(Pinrx,pintx,baud);
 #else
-    _RS485Pin = pinRS;
-    Serial.begin(9600);
+    Serial.begin(115200);
     Serial.println("Communication OK");
     RS485_Start(Pinrx,pintx,baud);
       //mySerial->println("Communication RS485 OK");
@@ -70,7 +72,7 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
       // statements
     break;
     default:
-    Serial.begin(9600);
+    Serial.begin(115200);
     Serial.println("Communication OK");
     break;
   }
@@ -78,10 +80,10 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS)
 }
 
 bool Monscape::RS485_Start(int Pinrx, int pintx,int baud) {
-  pinMode(_RS485Pin, OUTPUT);
+
 
 #if defined(ESP32)
-  Serial2.begin(baud);
+  Serial2.begin(baud, SERIAL_8N1, Pinrx, pintx);
 #else
   mySerial = new SoftwareSerial(Pinrx, pintx);
   mySerial->begin(baud);
@@ -94,9 +96,6 @@ bool Monscape::Log_Trame() {
   doc.clear();
   doc["Nom"] = _Nom_sys;
   doc["Adr"] = _Adresse;
-  doc["V_G"] = _Ver_G;
-  doc["V_mon"] = _Ver_ms;
-  doc["Desc"] = _Desc_Game;
   doc["Win"] = _Win_Code;
   doc["stat"] = _Trame.stat;
   doc["l_input"] = _Trame.last_input;
@@ -110,6 +109,8 @@ bool Monscape::Log_Trame() {
     case MSCape_WIFI:
       // statements
     break;
+
+
     case MSCape_RS485:
     digitalWrite(_RS485Pin, HIGH);
     delay(100);
@@ -124,6 +125,8 @@ bool Monscape::Log_Trame() {
     delay(100);
     digitalWrite(_RS485Pin, LOW);
     break;
+
+
     case MSCape_I2C:
       // statements
     break;
@@ -135,12 +138,54 @@ bool Monscape::Log_Trame() {
 
 }
 
+bool Monscape::Send_Trame(String To,String Commnand ){
+  String buffer;
+  doc.clear();
+  doc["Adr"] = _Adresse;
+  doc["To"] = _Adresse;
+  doc["exec"] = Commnand;
+  switch (_Protocole) {
+    case MSCape_RJ45:
+    break;
+    case MSCape_WIFI:
+      // statements
+    break;
+    case MSCape_RS485:
+
+    digitalWrite(_RS485Pin, HIGH);
+    serializeJson(doc, buffer);
+
+#if defined(ESP32)
+    delay(5);
+    Serial2.println(buffer);
+    delay(30);
+#else
+    mySerial->println(buffer);
+#endif
+    serializeJson(doc, Serial);
+    Serial.println(' ');
+    digitalWrite(_RS485Pin, LOW);
+
+    break;
+    case MSCape_I2C:
+      // statements
+    break;
+    default:
+    serializeJson(doc, Serial);
+    break;
+  }
+
+}
+
+
+
 bool Monscape::Init_Trame() {
   String buffer;
   //_Nom_sys, _Ver_G, _Ver_ms, _Desc_Game;
   doc["Nom"] = _Nom_sys;
+  doc["Adr"] = _Adresse;
   doc["V_G"] = _Ver_G;
-  doc["V_mon"] = "0.2";
+  doc["V_mon"] = _Ver_ms ;
   doc["Desc"] = _Desc_Game;
   doc["Win"] = _Win_Code;
 
@@ -172,6 +217,7 @@ bool Monscape::Init_Trame() {
     default:
     serializeJson(doc, Serial);
     break;
+    doc.clear();
   }
 
 
@@ -218,14 +264,14 @@ void Monscape::set_Trame_Input(int value) {
 #if defined(ESP32)
 bool Monscape::Listenserv() {
   String inData;
-
+//Serial.println("ecoute");
   digitalWrite(_RS485Pin, LOW);
   if (Serial2.available() > 0)
   {
-    //Serial.println("A");
+    Serial.println("A");
     inData = Serial2.readStringUntil('\n');
-    //Serial.println("B");
-    //Serial.println("data: " + inData);
+    Serial.println("B");
+    Serial.println("data: " + inData);
     deserializeJson(doc, inData);
     BasicCommand();
 
@@ -284,7 +330,7 @@ bool Monscape::BasicCommand(){
       Log_Trame();
       break;
       default:
-      special_command();
+      special_command(doc);
       break;
 
     }

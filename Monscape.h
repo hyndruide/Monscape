@@ -31,7 +31,8 @@ struct Trame {
 
 class Monscape {
   private:
-    String _Nom_sys,_Adresse, _Ver_G, _Ver_ms, _State_Game, _Desc_Game, _Win_Code;
+    String _Nom_sys,_Adresse, _Ver_G, _State_Game, _Desc_Game, _Win_Code;
+    String _Ver_ms = "0.2";
     int _Num_Relais;
     double _Temps;
     char _Pin_Relai[2];
@@ -52,18 +53,18 @@ class Monscape {
     Monscape(char relai, byte prtcl);
     Monscape(char relai[2], byte prtcl);
 
-    bool Desc_Game(String Nom_sys, String _Adresse, String Ver_G, String Ver_ms, String Desc_Game,String Win_Code);
+    bool Desc_Game(String Nom_sys, String _Adresse, String Ver_G, String Desc_Game,String Win_Code);
 
-    bool Communication(int Pinrx, int pintx , byte pinRS);
+    bool Communication(int Pinrx, int pintx , byte pinRS,int  baud = 57600);
 
     bool Listenserv();
 
     bool Log_Trame();
-    void special_command();
+    void special_command(StaticJsonDocument<128> doc);
     bool Puzzle();
     bool Fail();
     bool Win(bool bypass );
-
+    bool Send_Trame(String To,String Commnand );
     void set_Trame_Input(char* value, int sizet);
     void set_Trame_Input(long value);
     void set_Trame_Input(int value);
