@@ -142,7 +142,8 @@ bool Monscape::Send_Trame(String To,String Commnand ){
   String buffer;
   doc.clear();
   doc["Adr"] = _Adresse;
-  doc["To"] = _Adresse;
+  doc["A"] = To;
+  doc["C"] = "S";
   doc["exec"] = Commnand;
   switch (_Protocole) {
     case MSCape_RJ45:
@@ -323,10 +324,9 @@ bool Monscape::BasicCommand(){
           // statements
       break;
       case 'S':
-          // statements
+          special_command(doc);
       break;
       case 'I':
-      Serial.println("youpi");
       Log_Trame();
       break;
       default:
