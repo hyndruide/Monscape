@@ -55,7 +55,7 @@ class Monscape {
 
     bool Desc_Game(String Nom_sys, String _Adresse, String Ver_G, String Desc_Game,String Win_Code);
 
-    bool Communication(int Pinrx, int pintx , byte pinRS,int  baud = 57600);
+    bool Communication(int Pinrx, int pintx , byte pinRS,int  baud = 9600);
 
     bool Listenserv();
 

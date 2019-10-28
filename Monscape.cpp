@@ -286,7 +286,6 @@ bool Monscape::Listenserv() {
 
 bool Monscape::Listenserv() {
   String inData;
-
   digitalWrite(_RS485Pin, LOW);
   if (mySerial->available() > 0)
   {
