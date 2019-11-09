@@ -67,11 +67,10 @@ void setup() {
    * title : title of th puzzle
    * adresse : use like IP adresse for reconize who talk i use 3 character like "PG1"
    * Version game 
-   * Version of library
    * format show : usefull later to reconise which template is use on server to show the puzzle on screen.
    * how to win : short explaination for the code or the way to win the puzzle.
    */  
-  Puzz.Desc_Game("title", "adresse", "Version Game", "Version of library", "formatshow","how to win");
+  Puzz.Desc_Game("title", "adresse", "Version Game", "formatshow","how to win");
     /*
    * Communication :
    * 1st : RXpin for arduino but esp use Serial2 
