@@ -41,12 +41,17 @@ class Monscape {
     #if !defined(ESP32)
         SoftwareSerial *mySerial;
     #endif
+    #if defined(ESP32)  
+    StaticJsonDocument<512> doc;
+    #else
     StaticJsonDocument<128> doc;
+    #endif
     Trame _Trame;
     bool RS485_Start(int Pinrx, int pintx, int baud) ;
     bool BasicCommand();
     bool Init();
     bool Init_Trame();
+    bool clear_Trame();
 
   public:
 
@@ -60,7 +65,11 @@ class Monscape {
     bool Listenserv();
 
     bool Log_Trame();
+    #if defined(ESP32)
+    void special_command(StaticJsonDocument<512> doc);
+    #else
     void special_command(StaticJsonDocument<128> doc);
+    #endif
     bool Puzzle();
     bool Fail();
     bool Win(bool bypass );

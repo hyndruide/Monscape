@@ -43,9 +43,9 @@ void Monscape::set_Win(String Win_Code){
 
 bool Monscape::Communication(int Pinrx, int pintx , byte pinRS,int  baud)
 {
-  
+
   _RS485Pin = pinRS;
-   pinMode(_RS485Pin, OUTPUT);
+  pinMode(_RS485Pin, OUTPUT);
   digitalWrite(_RS485Pin, LOW);
   switch (_Protocole) {
 
@@ -76,6 +76,8 @@ bool Monscape::Communication(int Pinrx, int pintx , byte pinRS,int  baud)
     Serial.println("Communication OK");
     break;
   }
+  clear_Trame();
+  delay(1000);
   Init_Trame();
 }
 
@@ -155,14 +157,15 @@ bool Monscape::Send_Trame(String To,String Commnand ){
 
     digitalWrite(_RS485Pin, HIGH);
     serializeJson(doc, buffer);
-
-#if defined(ESP32)
-    delay(5);
-    Serial2.println(buffer);
     delay(30);
+#if defined(ESP32)
+
+    Serial2.println(buffer);
+    
 #else
     mySerial->println(buffer);
 #endif
+    delay(100);
     serializeJson(doc, Serial);
     Serial.println(' ');
     digitalWrite(_RS485Pin, LOW);
@@ -178,10 +181,46 @@ bool Monscape::Send_Trame(String To,String Commnand ){
 
 }
 
+bool Monscape::clear_Trame() {
+
+
+  switch (_Protocole) {
+    case MSCape_RJ45:
+    break;
+    case MSCape_WIFI:
+      // statements
+    break;
+    case MSCape_RS485:
+
+
+    digitalWrite(_RS485Pin, HIGH);
+    
+#if defined(ESP32)
+    delay(30);
+    Serial2.println("");
+    delay(100);
+#else
+    mySerial->println("");
+#endif
+    digitalWrite(_RS485Pin, LOW);
+
+    break;
+    case MSCape_I2C:
+      // statements
+    break;
+    default:
+
+    break;
+
+  }
+
+
+}
 
 
 bool Monscape::Init_Trame() {
   String buffer;
+  doc.clear();
   //_Nom_sys, _Ver_G, _Ver_ms, _Desc_Game;
   doc["Nom"] = _Nom_sys;
   doc["Adr"] = _Adresse;
@@ -198,12 +237,16 @@ bool Monscape::Init_Trame() {
       // statements
     break;
     case MSCape_RS485:
-
-    digitalWrite(_RS485Pin, HIGH);
     serializeJson(doc, buffer);
 
+
+    delay(2000);
+    digitalWrite(_RS485Pin, HIGH);
+    
 #if defined(ESP32)
+    delay(30);
     Serial2.println(buffer);
+    delay(100);
 #else
     mySerial->println(buffer);
 #endif
@@ -269,7 +312,7 @@ bool Monscape::Listenserv() {
   digitalWrite(_RS485Pin, LOW);
   if (Serial2.available() > 0)
   {
-    Serial.println("A");
+    Serial.println("Esp32 recept");
     inData = Serial2.readStringUntil('\n');
     Serial.println("B");
     Serial.println("data: " + inData);
@@ -323,7 +366,7 @@ bool Monscape::BasicCommand(){
           // statements
       break;
       case 'S':
-          special_command(doc);
+      special_command(doc);
       break;
       case 'I':
       Log_Trame();
