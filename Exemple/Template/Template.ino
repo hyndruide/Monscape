@@ -33,7 +33,7 @@ Monscape Puzz(12, MSCape_RS485);
  *    Send Trame.
  */
 
-void Monscape::special_command(StaticJsonDocument<256> doc) {
+void Monscape::special_command(StaticJsonDocument<128> doc) {
   
   }
 
