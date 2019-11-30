@@ -7,7 +7,7 @@
 #include <SoftwareSerial.h>
 #endif
 #include <ArduinoJson.h>
-
+#include <EEPROM.h>
 
 #define MSCape_RJ45 2
 #define MSCape_WIFI 4
@@ -20,6 +20,17 @@
 #define MSC_BUZY 9
 #define MSC_BYPASS 11
 #define MSC_WIN 12
+
+#define SOCKETIO 1
+#define ARDUINO 2
+#define SOUNDSERVER 3
+#define MONSCAPE 4
+
+#define VARIABLE 1
+#define STRING 2
+#define ARRAY 3
+
+#define MAXDATA 16
 
 struct Trame {
   String last_input;
@@ -52,7 +63,8 @@ class Monscape {
     bool Init();
     bool Init_Trame();
     bool clear_Trame();
-
+    char last_entry(char* header);
+    int empty_slot(char* header);
   public:
 
     Monscape(char relai, byte prtcl);
@@ -72,7 +84,7 @@ class Monscape {
     #endif
     bool Puzzle();
     bool Fail();
-    bool Win(bool bypass );
+    bool Win(bool bypass = false );
     bool Send_Trame(String To,String Commnand );
     void set_Trame_Input(char* value, int sizet);
     void set_Trame_Input(long value);
@@ -84,6 +96,23 @@ class Monscape {
 
     void set_Trame_Stat(char value);
     
+
+    void write_eeprom(String data);
+    String read_eeprom(unsigned int add);
+    void read_Header_eeprom(char* value);
+    void format_eeprom();
+    String parse_Commande(String value);
+    String code_Commande(int type,char * adru,char cmd,String data);
+    String code_Commande(int type,char * adru,char cmd,char data);
+    String code_Commande(int type,char * adru,char cmd,char* data);
+
+    String parse_eeprom(int adr);
+    String parse_eeprom64(unsigned int adr);
+    String send_command_eeprom(int adr);
+    int read_int_eeprom(int adr);
+    unsigned char read_char_eeprom(unsigned int adr);
+    bool is_emptyslot_eeprom(int adr);
+
     void set_Win(String Win_Code);
 
 
