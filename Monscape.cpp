@@ -388,10 +388,7 @@ bool Monscape::Log_Trame() {
   doc.clear();
   doc["Nom"] = _Nom_sys;
   doc["Adr"] = _Adresse;
-  doc["Win"] = _Win_Code;
   doc["stat"] = _Trame.stat;
-  doc["l_input"] = _Trame.last_input;
-  doc["input"] = _Trame.input;
 
   //doc["last_modification"] = time();
 
@@ -404,9 +401,10 @@ bool Monscape::Log_Trame() {
 
 
     case MSCape_RS485:
-    digitalWrite(_RS485Pin, HIGH);
-    delay(100);
     serializeJson(doc, buffer);
+    Serial.println("Send trame");
+    digitalWrite(_RS485Pin, HIGH);
+    //delay(10);
 #if defined(ESP32)
     Serial2.println(buffer);
 #else
@@ -414,7 +412,7 @@ bool Monscape::Log_Trame() {
 #endif
     serializeJson(doc, Serial);
     Serial.println("");
-    delay(100);
+    //delay(40);
     digitalWrite(_RS485Pin, LOW);
     break;
 
@@ -520,6 +518,7 @@ bool Monscape::Init_Trame() {
   doc["Desc"] = _Desc_Game;
   doc["Win"] = _Win_Code;
 
+  serializeJson(doc, buffer);
 
   switch (_Protocole) {
     case MSCape_RJ45:
@@ -527,25 +526,26 @@ bool Monscape::Init_Trame() {
     case MSCape_WIFI:
       // statements
     break;
+
     case MSCape_RS485:
-    serializeJson(doc, buffer);
 
-
-    delay(2000);
     digitalWrite(_RS485Pin, HIGH);
     
 #if defined(ESP32)
     delay(30);
     Serial2.println(buffer);
-    delay(100);
+    delay(buffer.length()*2);
 #else
+    delay(buffer.length()*2);
     mySerial->println(buffer);
+    delay(buffer.length()*2);
 #endif
     serializeJson(doc, Serial);
     Serial.println(' ');
     digitalWrite(_RS485Pin, LOW);
 
     break;
+
     case MSCape_I2C:
       // statements
     break;
@@ -626,7 +626,7 @@ bool Monscape::Listenserv() {
     //Serial.println("A");
     inData = mySerial->readStringUntil('\n');
     //Serial.println("B");
-    Serial.println("data: " + inData);
+    //Serial.println("data: " + inData);
     deserializeJson(doc, inData);
     BasicCommand();
     inData = "";
@@ -671,12 +671,9 @@ bool Monscape::BasicCommand(){
       special_command(doc);
       break;
       case 'I':
+
       Log_Trame();
       break;
-      default:
-      special_command(doc);
-      break;
-
     }
     doc.clear();
   }
