@@ -385,7 +385,6 @@ bool Monscape::RS485_Start(int Pinrx, int pintx,int baud) {
 
 bool Monscape::Log_Trame() {
   String buffer;
-  doc.clear();
   doc["Nom"] = _Nom_sys;
   doc["Adr"] = _Adresse;
   doc["stat"] = _Trame.stat;
@@ -402,7 +401,7 @@ bool Monscape::Log_Trame() {
 
     case MSCape_RS485:
     serializeJson(doc, buffer);
-    Serial.println("Send trame");
+    
     digitalWrite(_RS485Pin, HIGH);
     //delay(10);
 #if defined(ESP32)
@@ -410,19 +409,21 @@ bool Monscape::Log_Trame() {
 #else
     mySerial->println(buffer);
 #endif
-    serializeJson(doc, Serial);
-    Serial.println("");
+
     //delay(40);
     digitalWrite(_RS485Pin, LOW);
     break;
-
-
+    
     case MSCape_I2C:
       // statements
     break;
     default:
     serializeJson(doc, Serial);
     break;
+    Serial.println("Send trame");
+    serializeJson(doc, Serial);
+    Serial.println("");
+    doc.clear();
   }
 
 
@@ -451,7 +452,6 @@ bool Monscape::Send_Trame(String To,String Commnand ){
     Serial2.println(buffer);
     delay(buffer.length()*2);
 #else
-
     mySerial->println(buffer);
 #endif
     
@@ -671,7 +671,6 @@ bool Monscape::BasicCommand(){
       special_command(doc);
       break;
       case 'I':
-
       Log_Trame();
       break;
     }
