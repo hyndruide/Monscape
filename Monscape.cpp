@@ -385,10 +385,11 @@ bool Monscape::RS485_Start(int Pinrx, int pintx,int baud) {
 
 bool Monscape::Log_Trame() {
   String buffer;
+  doc.clear();
   doc["Nom"] = _Nom_sys;
   doc["Adr"] = _Adresse;
   doc["stat"] = _Trame.stat;
-
+  serializeJson(doc, buffer);
   //doc["last_modification"] = time();
 
   switch (_Protocole) {
@@ -400,18 +401,9 @@ bool Monscape::Log_Trame() {
 
 
     case MSCape_RS485:
-    serializeJson(doc, buffer);
     
-    digitalWrite(_RS485Pin, HIGH);
-    //delay(10);
-#if defined(ESP32)
-    Serial2.println(buffer);
-#else
-    mySerial->println(buffer);
-#endif
-
-    //delay(40);
-    digitalWrite(_RS485Pin, LOW);
+    
+	sendrs485(buffer);
     break;
     
     case MSCape_I2C:
@@ -436,6 +428,7 @@ bool Monscape::Send_Trame(String To,String Commnand ){
   doc["A"] = To;
   doc["C"] = "S";
   doc["exec"] = Commnand;
+  serializeJson(doc, buffer);
   switch (_Protocole) {
     case MSCape_RJ45:
     break;
@@ -444,20 +437,9 @@ bool Monscape::Send_Trame(String To,String Commnand ){
     break;
     case MSCape_RS485:
 
-    digitalWrite(_RS485Pin, HIGH);
-    serializeJson(doc, buffer);
     
-#if defined(ESP32)
-    delay(30);
-    Serial2.println(buffer);
-    delay(buffer.length()*2);
-#else
-    mySerial->println(buffer);
-#endif
     
-    serializeJson(doc, Serial);
-    Serial.println(' ');
-    digitalWrite(_RS485Pin, LOW);
+	sendrs485(buffer);
 
     break;
     case MSCape_I2C:
@@ -507,6 +489,26 @@ bool Monscape::clear_Trame() {
 }
 
 
+bool Monscape::sendrs485(String buffer){
+	    digitalWrite(_RS485Pin, HIGH);
+    
+#if defined(ESP32)
+    delay(30);
+    Serial2.println(buffer);
+    delay(buffer.length()*2);
+#else
+    //delay(buffer.length()*2);
+    delay(1);
+    mySerial->println(buffer);
+    delay(1);
+#endif
+
+    digitalWrite(_RS485Pin, LOW);
+    serializeJson(doc, Serial);
+    Serial.println(' ');
+}
+
+
 bool Monscape::Init_Trame() {
   String buffer;
   doc.clear();
@@ -529,20 +531,7 @@ bool Monscape::Init_Trame() {
 
     case MSCape_RS485:
 
-    digitalWrite(_RS485Pin, HIGH);
-    
-#if defined(ESP32)
-    delay(30);
-    Serial2.println(buffer);
-    delay(buffer.length()*2);
-#else
-    delay(buffer.length()*2);
-    mySerial->println(buffer);
-    delay(buffer.length()*2);
-#endif
-    serializeJson(doc, Serial);
-    Serial.println(' ');
-    digitalWrite(_RS485Pin, LOW);
+	sendrs485(buffer);
 
     break;
 
@@ -620,13 +609,10 @@ bool Monscape::Listenserv() {
 
 bool Monscape::Listenserv() {
   String inData;
-  digitalWrite(_RS485Pin, LOW);
   if (mySerial->available() > 0)
   {
     //Serial.println("A");
     inData = mySerial->readStringUntil('\n');
-    //Serial.println("B");
-    //Serial.println("data: " + inData);
     deserializeJson(doc, inData);
     BasicCommand();
     inData = "";

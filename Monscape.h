@@ -72,7 +72,7 @@ class Monscape {
 
     bool Desc_Game(String Nom_sys, String _Adresse, String Ver_G, String Desc_Game,String Win_Code);
 
-    bool Communication(int Pinrx, int pintx , byte pinRS,int  baud = 38400);
+    bool Communication(int Pinrx, int pintx , byte pinRS,int  baud = 28800);
 
     bool Listenserv();
 
@@ -96,7 +96,7 @@ class Monscape {
 
     void set_Trame_Stat(char value);
     
-
+    bool sendrs485(String buff);
     void write_eeprom(String data);
     String read_eeprom(unsigned int add);
     void read_Header_eeprom(char* value);
