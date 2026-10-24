@@ -1,0 +1,8 @@
+node_modules/
+monscape_nodejs_serv/node_modules/
+*.o
+*.a
+*.so
+*.log
+.DS_Store
+.agents_tmp/

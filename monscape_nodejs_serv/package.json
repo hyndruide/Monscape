@@ -1,0 +1,31 @@
+{
+  "name": "monscape-server",
+  "version": "0.3.0",
+  "description": "Monscape Escape Game Conductor Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": [
+    "escape-game",
+    "monscape",
+    "hexagonal-architecture",
+    "arduino",
+    "esp32",
+    "rs485"
+  ],
+  "author": "Ulric Denis",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
+  "optionalDependencies": {
+    "@serialport/parser-readline": "^12.0.0",
+    "onoff": "^6.0.3",
+    "serialport": "^12.0.0"
+  }
+}
